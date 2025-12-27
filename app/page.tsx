@@ -7,6 +7,7 @@ import Controls from '@/components/Controls'
 import ScrollingTicker from '@/components/ScrollingTicker'
 import LoadingScreen from '@/components/LoadingScreen'
 import { useCryptoStore } from '@/store/cryptoStore'
+import CategoriesBar from '@/components/CategoriesBar'
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
@@ -41,6 +42,8 @@ export default function Home() {
       <div className="flex-1">
         <BubbleChartOptimized />
       </div>
+      {/* Viral Categories moved to bottom */}
+      <CategoriesBar />
     </main>
   )
 }

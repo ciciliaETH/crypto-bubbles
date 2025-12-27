@@ -5,7 +5,7 @@ import { Loader2, TrendingUp } from 'lucide-react'
 
 export default function LoadingScreen() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-mesh">
+    <div className="min-h-screen flex items-center justify-center bg-black">
       <div className="text-center">
         <motion.div
           animate={{ 
@@ -30,11 +30,8 @@ export default function LoadingScreen() {
           transition={{ delay: 0.3 }}
         >
           <h2 className="text-2xl font-bold text-white mb-2">
-            Loading Market Data
+            Loading
           </h2>
-          <p className="text-gray-400 mb-6">
-            Fetching real-time cryptocurrency prices...
-          </p>
           
           <div className="flex items-center justify-center gap-2">
             <Loader2 className="w-5 h-5 text-primary animate-spin" />

@@ -12,7 +12,7 @@ export default function ScrollingTicker() {
   ])
 
   return (
-    <div className="w-full bg-black/40 backdrop-blur-sm border-b border-white/10 overflow-hidden py-2">
+    <div className="w-full bg-black border-b border-white/10 overflow-hidden py-2">
       <div className="flex animate-scroll whitespace-nowrap">
         {/* Duplicate items for seamless loop */}
         {[...tickerItems, ...tickerItems].map((item, index) => (

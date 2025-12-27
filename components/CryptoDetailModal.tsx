@@ -53,7 +53,9 @@ export default function CryptoDetailModal({ isOpen, onClose, crypto }: CryptoDet
     },
     {
       label: 'Circulating Supply',
-      value: crypto.circulating_supply?.toLocaleString() || 'N/A',
+      value: crypto.circulating_supply && crypto.circulating_supply > 0
+        ? crypto.circulating_supply.toLocaleString()
+        : 'N/A',
       icon: BarChart3,
       color: 'text-gray-400',
     },
