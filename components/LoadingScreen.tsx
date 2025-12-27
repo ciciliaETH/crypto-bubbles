@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Loader2, TrendingUp } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 export default function LoadingScreen() {
   return (
@@ -19,8 +19,13 @@ export default function LoadingScreen() {
           }}
           className="inline-block mb-6"
         >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-2xl">
-            <TrendingUp className="w-10 h-10 text-white" />
+          {/* Bubble logo */}
+          <div className="w-20 h-20 rounded-2xl bg-black/40 flex items-center justify-center shadow-2xl">
+            <div className="relative w-12 h-12">
+              <span className="absolute left-0 bottom-0 w-4 h-4 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-300 opacity-90" />
+              <span className="absolute left-3 top-1 w-8 h-8 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-300 opacity-90" />
+              <span className="absolute right-0 top-4 w-5 h-5 rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-300 opacity-90" />
+            </div>
           </div>
         </motion.div>
 
@@ -34,8 +39,6 @@ export default function LoadingScreen() {
           </h2>
           
           <div className="flex items-center justify-center gap-2">
-            <Loader2 className="w-5 h-5 text-primary animate-spin" />
-            <span className="text-sm text-gray-500">Powered by CoinGecko</span>
           </div>
         </motion.div>
 
@@ -44,7 +47,7 @@ export default function LoadingScreen() {
           className="mt-8 w-64 h-1 bg-white/10 rounded-full overflow-hidden mx-auto"
         >
           <motion.div
-            className="h-full bg-gradient-to-r from-primary to-secondary"
+            className="h-full bg-white"
             animate={{ x: ['-100%', '200%'] }}
             transition={{ 
               duration: 1.5,

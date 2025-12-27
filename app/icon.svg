@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="b1" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </radialGradient>
+    <radialGradient id="b2" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#e9d5ff"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </radialGradient>
+    <radialGradient id="b3" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#f5d0fe"/>
+      <stop offset="100%" stop-color="#d946ef"/>
+    </radialGradient>
+  </defs>
+  <rect width="128" height="128" rx="26" fill="#0b0b0f"/>
+  <g>
+    <circle cx="46" cy="84" r="14" fill="url(#b1)"/>
+    <circle cx="64" cy="48" r="22" fill="url(#b2)"/>
+    <circle cx="90" cy="64" r="16" fill="url(#b3)"/>
+  </g>
+</svg>

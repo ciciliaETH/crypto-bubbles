@@ -72,7 +72,7 @@ export default function BubbleChartOptimized() {
     canvas.style.height = `${dimensions.height}px`
 
     // Preload crypto images via proxy
-    filteredData.forEach(crypto => {
+    (filteredData as CryptoData[]).forEach((crypto: CryptoData) => {
       if (!imagesRef.current.has(crypto.id)) {
         const img = new Image()
         img.crossOrigin = 'anonymous'
@@ -99,22 +99,22 @@ export default function BubbleChartOptimized() {
     ensureAsset('bubble', '/images/bubble.png')
 
     // Calculate all percentages first (exclude popped)
-    const activeList = filteredData.filter(c => !poppedIdsRef.current.has(c.id))
-    const dataWithPercentages = activeList.map(crypto => ({
+    const activeList = (filteredData as CryptoData[]).filter((c: CryptoData) => !poppedIdsRef.current.has(c.id))
+    const dataWithPercentages = activeList.map((crypto: CryptoData) => ({
       crypto,
       percentage: getPriceChange(crypto, timeframe)
     }))
 
     // Get max absolute percentage and market cap for scaling
     const maxAbsPercentage = Math.max(...dataWithPercentages.map(d => Math.abs(d.percentage)))
-    const caps = filteredData.map(d => d.market_cap).filter(v => typeof v === 'number' && v > 0)
+    const caps = (activeList as CryptoData[]).map((d: CryptoData) => d.market_cap).filter(v => typeof v === 'number' && v > 0)
     const maxCap = d3.max(caps) || 1
     const minCap = d3.min(caps) || 1
     
     // Responsive radius - sedikit lebih besar saat jumlah bubble sedikit
     const isMobile = dimensions.width < 640
     const isTablet = dimensions.width >= 640 && dimensions.width < 1024
-    const count = filteredData.length
+    const count = activeList.length
     
     let baseMinRadius, baseMaxRadius
     if (isMobile) {
@@ -149,7 +149,7 @@ export default function BubbleChartOptimized() {
       return Math.max(Math.max(6, baseMinRadius * 0.65), Math.min(r, capMaxRadius))
     }
 
-    const nodes: BubbleNode[] = dataWithPercentages.map((item, i) => {
+    const nodes: BubbleNode[] = dataWithPercentages.map((item: { crypto: CryptoData; percentage: number }, i: number) => {
       const percentage = item.percentage
       const radius = mode === 'marketcap'
         ? radiusScaleCap(item.crypto.market_cap || minCap)
