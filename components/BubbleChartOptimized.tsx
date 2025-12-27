@@ -68,8 +68,9 @@ export default function BubbleChartOptimized() {
     const dpr = window.devicePixelRatio || 1
     canvas.width = dimensions.width * dpr
     canvas.height = dimensions.height * dpr
-    canvas.style.width = `${dimensions.width}px`
-    canvas.style.height = `${dimensions.height}px`
+    // Use string concatenation (no template literal, no global String())
+    canvas.style.width = dimensions.width + 'px';
+    canvas.style.height = dimensions.height + 'px';
 
     // Preload crypto images via proxy
     (filteredData as CryptoData[]).forEach((crypto: CryptoData) => {
