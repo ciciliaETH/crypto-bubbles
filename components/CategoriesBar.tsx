@@ -39,10 +39,10 @@ export default function CategoriesBar() {
   if (!items.length) return null
 
   return (
-    <div className="px-6 py-3 border-t border-white/5 bg-black/70 backdrop-blur-sm">
-      <div className="flex items-center justify-between mb-2">
+    <div className="px-4 md:px-6 py-3 border-t border-white/5 bg-black/70 backdrop-blur-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
         <div className="text-sm text-gray-300 font-medium">Viral Categories (24h)</div>
-        <div className="w-64">
+        <div className="w-full sm:w-64">
           <input
             value={q}
             onChange={(e)=>setQ(e.target.value)}

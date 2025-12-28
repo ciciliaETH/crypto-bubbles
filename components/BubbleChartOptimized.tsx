@@ -134,7 +134,9 @@ export default function BubbleChartOptimized() {
     // - mode === 'marketcap': berdasarkan market cap (mirip CryptoBubbles)
     const diagonal = Math.min(dimensions.width, dimensions.height)
     // Batasi maksimum radius untuk mencegah bubble raksasa menutupi layar
-    const maxFrac = count > 140 ? 0.16 : count > 100 ? 0.20 : 0.23
+    const maxFrac = mode === 'marketcap'
+      ? (count > 140 ? 0.22 : count > 100 ? 0.26 : 0.30)
+      : (count > 140 ? 0.16 : count > 100 ? 0.20 : 0.23)
     const capMaxRadius = Math.max(baseMaxRadius, diagonal * maxFrac)
     const radiusScaleChange = d3.scaleSqrt()
       .domain([0, maxAbsPercentage || 1])
@@ -145,12 +147,13 @@ export default function BubbleChartOptimized() {
     const radiusScaleCap = (cap: number) => {
       const v = Math.log(Math.max(1, cap))
       const t = (v - logMin) / Math.max(1e-6, logMax - logMin)
-      const eased = Math.pow(Math.max(0, Math.min(1, t)), 0.85)
+      // Sedikit lebih menonjolkan market cap besar agar tampak lebih dominan
+      const eased = Math.pow(Math.max(0, Math.min(1, t)), 1.15)
       const r = baseMinRadius + eased * (capMaxRadius - baseMinRadius)
       return Math.max(Math.max(6, baseMinRadius * 0.65), Math.min(r, capMaxRadius))
     }
 
-    const nodes: BubbleNode[] = dataWithPercentages.map((item: { crypto: CryptoData; percentage: number }, i: number) => {
+    let nodes: BubbleNode[] = dataWithPercentages.map((item: { crypto: CryptoData; percentage: number }, i: number) => {
       const percentage = item.percentage
       const radius = mode === 'marketcap'
         ? radiusScaleCap(item.crypto.market_cap || minCap)
@@ -177,22 +180,64 @@ export default function BubbleChartOptimized() {
       }
     })
 
+    // Global area-aware scaling to improve mobile packing
+    // Aim for a target fill ratio of the screen to reduce overlap on small screens
+    const screenArea = Math.max(1, dimensions.width * dimensions.height)
+    const targetFill = mode === 'marketcap'
+      ? (isMobile ? 0.30 : (isTablet ? 0.36 : 0.42))
+      : (isMobile ? 0.30 : (isTablet ? 0.36 : 0.42))
+    const totalArea = nodes.reduce((acc, n) => acc + Math.PI * n.radius * n.radius, 0)
+    let scale = 1
+    if (totalArea > screenArea * targetFill) {
+      scale = Math.sqrt((screenArea * targetFill) / totalArea)
+    }
+
+    if (scale < 1) {
+      const minClamp = Math.max(6, baseMinRadius * 0.65)
+      nodes = nodes.map(n => ({
+        ...n,
+        radius: Math.max(minClamp, n.radius * scale)
+      }))
+    }
+
+    // Hard cap for maximum radius so big coins don't dominate on mobile
+    const baseShort = Math.min(dimensions.width, dimensions.height)
+    const hardMax = mode === 'marketcap'
+      ? (isMobile
+        ? Math.min(120, baseShort * 0.22)
+        : (isTablet
+          ? Math.min(160, baseShort * 0.26)
+          : Math.min(220, baseShort * 0.30)))
+      : (isMobile
+        ? Math.min(120, baseShort * 0.22)
+        : (isTablet
+          ? Math.min(160, baseShort * 0.26)
+          : Math.min(220, baseShort * 0.30)))
+
+    nodes.forEach(n => { n.radius = Math.min(n.radius, hardMax) })
+
     nodesRef.current = nodes
 
     // MAXIMUM spacing prevention - PAKSA tidak overlap
-    const collisionPadding = mode === 'marketcap' ? (isMobile ? 10 : (isTablet ? 12 : 16)) : (isMobile ? 8 : (isTablet ? 10 : 12))
+    const collisionPadding = mode === 'marketcap' ? (isMobile ? 6 : (isTablet ? 8 : 10)) : (isMobile ? 6 : (isTablet ? 8 : 10))
     
     const simulation = d3.forceSimulation(nodes)
-      .force('charge', d3.forceManyBody().strength(isMobile ? -50 : -60))
+      .force('charge', d3.forceManyBody().strength(
+        mode === 'marketcap'
+          ? (isMobile ? -28 : (isTablet ? -34 : -32))
+          : (isMobile ? -28 : (isTablet ? -34 : -32))
+      ))
       .force('collision', d3.forceCollide<BubbleNode>()
         .radius(d => d.radius + collisionPadding)
         .strength(1.1)
-        .iterations(60)
+        .iterations(80)
       )
-      // Tambah center force saat marketcap untuk stabilitas layout besar
-      .force('center', mode === 'marketcap' ? d3.forceCenter(dimensions.width / 2, dimensions.height / 2) : undefined as any)
-      .alphaDecay(0.0005)
-      .velocityDecay(0.95)
+      // Terapkan gaya pusat untuk semua mode agar packing rapat
+      .force('center', d3.forceCenter(dimensions.width / 2, dimensions.height / 2))
+      .force('x', d3.forceX(dimensions.width / 2).strength(0.05))
+      .force('y', d3.forceY(dimensions.height / 2).strength(0.05))
+      .alphaDecay(0.0003)
+      .velocityDecay(0.90)
       .alpha(1)
       .alphaTarget(0)
 
