@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { getCryptoMarketData, CryptoData, TimeFrame, getPriceChange, getCategoryMarketData } from '@/lib/api'
+import { getCryptoMarketData, CryptoData, TimeFrame, getPriceChange } from '@/lib/api'
 
 interface CryptoStore {
   cryptoData: CryptoData[]
@@ -10,7 +10,7 @@ interface CryptoStore {
   minAbsChange: number
   mode: 'change' | 'marketcap'
   popMode: boolean
-  categoryId: string | null
+  // categories removed
   selectedCrypto: CryptoData | null
   isLoading: boolean
   error: string | null
@@ -21,7 +21,6 @@ interface CryptoStore {
   setMinAbsChange: (n: number) => void
   setMode: (m: 'change' | 'marketcap') => void
   setPopMode: (v: boolean) => void
-  setCategoryId: (id: string | null) => void
   setSelectedCrypto: (crypto: CryptoData | null) => void
   fetchCryptoData: () => Promise<void>
   filterData: () => void
@@ -36,7 +35,7 @@ export const useCryptoStore = create<CryptoStore>((set, get) => ({
   minAbsChange: 0, // default 0% agar tampak ramai seperti CryptoBubbles
   mode: 'marketcap',
   popMode: false,
-  categoryId: null,
+  
   selectedCrypto: null,
   isLoading: false,
   error: null,
@@ -69,10 +68,6 @@ export const useCryptoStore = create<CryptoStore>((set, get) => ({
 
   setPopMode: (v) => set({ popMode: v }),
 
-  setCategoryId: (id) => {
-    set({ categoryId: id })
-    get().fetchCryptoData()
-  },
 
   setSelectedCrypto: (crypto) => {
     set({ selectedCrypto: crypto })
@@ -83,9 +78,7 @@ export const useCryptoStore = create<CryptoStore>((set, get) => ({
     try {
       // Ambil data: jika memilih kategori (CoinGecko), gunakan data kategori
       const state = get()
-      const data = state.categoryId
-        ? await getCategoryMarketData(state.categoryId, 200)
-        : await getCryptoMarketData(1000)
+      const data = await getCryptoMarketData(1000)
       
       // FILTER OUT STABLECOINS DAN FIAT - HANYA CRYPTO ASLI (kecuali pada mode marketcap)
       const excludeList = [

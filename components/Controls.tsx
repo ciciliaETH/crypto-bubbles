@@ -2,7 +2,7 @@
 
 import { useCryptoStore } from '@/store/cryptoStore'
 import { Pin } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { TimeFrame } from '@/lib/api'
 
 const timeframes: { value: TimeFrame; label: string }[] = [
@@ -14,28 +14,7 @@ const timeframes: { value: TimeFrame; label: string }[] = [
 ]
 
 export default function Controls() {
-  const { timeframe, setTimeframe, mode, setMode, popMode, setPopMode, setCategoryId } = useCryptoStore() as any
-  const [openCat, setOpenCat] = useState(false)
-  const [cats, setCats] = useState<any[]>([])
-  const catWrapRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (!openCat || cats.length) return
-    fetch('/api/coingecko-categories').then(r=>r.json()).then(d=>{
-      const sorted = [...d].sort((a:any,b:any)=>Math.abs(b.market_cap_change_24h||0)-Math.abs(a.market_cap_change_24h||0))
-      setCats(sorted)
-    })
-  }, [openCat, cats.length])
-
-  // Close on outside click
-  useEffect(() => {
-    const onDown = (e: MouseEvent) => {
-      if (openCat && catWrapRef.current && !catWrapRef.current.contains(e.target as Node)) {
-        setOpenCat(false)
-      }
-    }
-    window.addEventListener('mousedown', onDown)
-    return () => window.removeEventListener('mousedown', onDown)
-  }, [openCat])
+  const { timeframe, setTimeframe, mode, setMode, popMode, setPopMode } = useCryptoStore() as any
 
   return (
     <div className="px-4 md:px-6 py-3 bg-black border-b border-white/5">
@@ -84,32 +63,7 @@ export default function Controls() {
           >
             <Pin size={16} />
           </button>
-          <div className="relative" ref={catWrapRef}>
-            <button
-              onClick={() => setOpenCat(!openCat)}
-              className={`ml-2 md:ml-3 px-3 py-1.5 rounded-md text-xs md:text-sm font-semibold ${openCat ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'}`}
-            >
-              Categories
-            </button>
-            {openCat && (
-              <div
-                className="absolute right-0 top-full mt-2 z-50 w-72 md:w-80 max-h-[60vh] overflow-auto overscroll-contain bg-black/95 border border-white/10 rounded-xl p-2 shadow-2xl backdrop-blur-md"
-                style={{
-                  maxWidth: 'min(20rem, calc(100vw - 1.5rem))'
-                }}
-              >
-                <button className="w-full text-left px-3 py-2 rounded-md bg-white/5 hover:bg-white/10 text-gray-300" onClick={()=>{setCategoryId(null); setOpenCat(false)}}>
-                  All Coins
-                </button>
-                {cats.map((c:any)=> (
-                  <button key={c.id} className="w-full text-left px-3 py-2 rounded-md bg-white/5 hover:bg-white/10 text-gray-300 flex items-center gap-2 mt-1" onClick={()=>{setCategoryId(c.id); setOpenCat(false)}}>
-                    <span className="text-white font-semibold">{c.name}</span>
-                    <span className={`${(c.market_cap_change_24h||0)>=0? 'text-green-400':'text-red-400'} text-xs`}>{(c.market_cap_change_24h||0).toFixed(2)}%</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Categories removed */}
         </div>
       </div>
     </div>
